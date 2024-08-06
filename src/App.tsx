@@ -1,35 +1,51 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useReducer } from "react";
+import Header from "./components/Header";
+import Main from "./components/Main";
+import StartScreen from "./components/StartScreen";
 
-function App() {
-  const [count, setCount] = useState(0)
+type QuestionAction = {
+  type: "loading" | "success" | "error";
+  payload: [];
+};
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+function reducer(
+  state: typeof initialState,
+  action: QuestionAction
+): typeof initialState {
+  switch (action.type) {
+    case "success":
+      return { ...state, status: "success", questions: action.payload };
+    case "error":
+      return { ...state, status: "error", questions: [] };
+    default:
+      return state;
+  }
 }
 
-export default App
+const initialState = { status: "loading", questions: [] };
+
+function App() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+
+  const questionsLength = state.questions.length;
+  useEffect(() => {
+    fetch("http://localhost:8000/questions")
+      .then((response) => response.json())
+      .then((data) => dispatch({ type: "success", payload: data }))
+      .catch(() => dispatch({ type: "error", payload: [] }));
+  }, []);
+
+  return (
+    <div className=" flex flex-col justify-center items-center gap-20 py-24">
+      <Header />
+
+      <Main>
+        {state.status === "loading" && <p>Loading...</p>}
+        {state.status === "error" && <p>Something went wrong</p>}
+        {state.status === "success" && <StartScreen count={questionsLength} />}
+      </Main>
+    </div>
+  );
+}
+
+export default App;
