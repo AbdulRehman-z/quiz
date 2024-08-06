@@ -30,4 +30,12 @@ img {
   .btn {
     @apply px-6 py-4 rounded-full border-2 border-secondary-100 hover:bg-secondary-100 transition-all duration-300 active:translate-y-1;
   }
+
+  .btn-long {
+    @apply pl-5 text-start min-w-96 py-4 rounded-full border-2 border-secondary-100 bg-secondary-100 transition-all duration-300 active:translate-x-4;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-secondary-100 px-6 py-2 bg-blue-400 font-semibold rounded-full text-white active:translate-y-1 transition-all duration-300;
+  }
 }
